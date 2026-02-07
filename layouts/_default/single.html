@@ -1,0 +1,15 @@
+{{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
+{{ define "main" }}
+<article>
+    <h1>{{ .Title }}</h1>
+    <p class="post-meta">{{ .Date.Format "January 2, 2006" }} · {{ .ReadingTime }} min read</p>
+    {{ if .Params.tags }}
+    <div class="tags">
+        {{ range .Params.tags }}<a href="/tags/{{ . | urlize }}">{{ . }}</a>{{ end }}
+    </div>
+    {{ end }}
+    <div class="content">
+        {{ .Content }}
+    </div>
+</article>
+{{ end }}
