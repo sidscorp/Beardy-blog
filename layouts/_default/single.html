@@ -1,15 +1,36 @@
 {{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
 {{ define "main" }}
 <article>
+    {{ with .Params.series }}
+    <a href="{{ "posts" | relURL }}" class="series-badge" style="text-decoration: none;">{{ index . 0 }}</a>
+    {{ end }}
     <h1>{{ .Title }}</h1>
     <p class="post-meta">{{ .Date.Format "January 2, 2006" }} · {{ .ReadingTime }} min read</p>
     {{ if .Params.tags }}
     <div class="tags">
-        {{ range .Params.tags }}<a href="/tags/{{ . | urlize }}">{{ . }}</a>{{ end }}
+        {{ range .Params.tags }}<a href="{{ "tags" | relURL }}/{{ . | urlize }}/">{{ . }}</a>{{ end }}
     </div>
     {{ end }}
     <div class="content">
         {{ .Content }}
     </div>
+    
+    <!-- Series navigation -->
+    {{ with .Params.series }}
+    {{ $currentSeries := index . 0 }}
+    {{ $seriesPosts := where $.Site.RegularPages "Params.series" "intersect" (slice $currentSeries) }}
+    {{ if gt (len $seriesPosts) 1 }}
+    <div style="margin-top: 3rem; padding: 1.5rem; background: var(--card-bg); border-radius: 8px;">
+        <h3 style="margin-top: 0; color: var(--accent);">More from {{ $currentSeries }}</h3>
+        <ul style="margin: 0; padding-left: 1.5rem;">
+        {{ range $seriesPosts }}
+            {{ if ne .Permalink $.Permalink }}
+            <li><a href="{{ .Permalink }}">{{ .Title }}</a> <span class="post-meta">— {{ .Date.Format "Jan 2" }}</span></li>
+            {{ end }}
+        {{ end }}
+        </ul>
+    </div>
+    {{ end }}
+    {{ end }}
 </article>
 {{ end }}

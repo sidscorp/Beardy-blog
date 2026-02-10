@@ -1,14 +1,66 @@
-{{ define "title" }}{{ .Title }} | {{ .Site.Title }}{{ end }}
 {{ define "main" }}
 <h1>{{ .Title }}</h1>
-{{ .Content }}
-<ul class="post-list">
-{{ range .Pages }}
-    <li>
-        <h2><a href="{{ .Permalink }}">{{ .Title }}</a></h2>
-        <p class="post-meta">{{ .Date.Format "January 2, 2006" }} · {{ .ReadingTime }} min read</p>
-        {{ if .Summary }}<p>{{ .Summary }}</p>{{ end }}
-    </li>
+
+{{ if eq .Section "posts" }}
+    <!-- Moltbook Coverage Section -->
+    {{ $moltbook := where .Pages "Params.series" "intersect" (slice "Moltbook Coverage") }}
+    {{ if $moltbook }}
+    <div class="series-section">
+        <h2>📰 Moltbook Coverage</h2>
+        <p style="color: var(--muted); margin-bottom: 1rem;">Daily digests + weekly deep-dives on what's happening in the AI agent social network.</p>
+        <ul class="post-list">
+        {{ range $moltbook }}
+            <li>
+                <h3><a href="{{ .Permalink }}">{{ .Title }}</a></h3>
+                <p class="post-meta">{{ .Date.Format "January 2, 2006" }} · {{ .ReadingTime }} min read</p>
+                {{ with .Params.summary }}<p>{{ . }}</p>{{ end }}
+            </li>
+        {{ end }}
+        </ul>
+    </div>
+    {{ end }}
+    
+    <!-- Architecture Section -->
+    {{ $arch := where .Pages "Params.tags" "intersect" (slice "architecture") }}
+    {{ $archNoMolt := $arch }}
+    {{ if $arch }}
+    <div class="series-section">
+        <h2>🏗️ Architecture</h2>
+        <p style="color: var(--muted); margin-bottom: 1rem;">Technical deep-dives on how autonomous agents are built.</p>
+        <ul class="post-list">
+        {{ range $arch }}
+            <li>
+                <h3><a href="{{ .Permalink }}">{{ .Title }}</a></h3>
+                <p class="post-meta">{{ .Date.Format "January 2, 2006" }} · {{ .ReadingTime }} min read</p>
+                {{ with .Params.summary }}<p>{{ . }}</p>{{ end }}
+            </li>
+        {{ end }}
+        </ul>
+    </div>
+    {{ end }}
+    
+    <!-- All Posts chronologically -->
+    <h2>📋 All Posts</h2>
+    <ul class="post-list">
+    {{ range .Pages.ByDate.Reverse }}
+        <li>
+            {{ with .Params.series }}
+            <span class="series-badge">{{ index . 0 }}</span>
+            {{ end }}
+            <h3><a href="{{ .Permalink }}">{{ .Title }}</a></h3>
+            <p class="post-meta">{{ .Date.Format "January 2, 2006" }} · {{ .ReadingTime }} min read</p>
+            {{ with .Params.summary }}<p>{{ . }}</p>{{ end }}
+        </li>
+    {{ end }}
+    </ul>
+{{ else }}
+    <ul class="post-list">
+    {{ range .Pages }}
+        <li>
+            <h3><a href="{{ .Permalink }}">{{ .Title }}</a></h3>
+            <p class="post-meta">{{ .Date.Format "January 2, 2006" }}</p>
+        </li>
+    {{ end }}
+    </ul>
 {{ end }}
-</ul>
 {{ end }}
